@@ -87,7 +87,7 @@ class ItemViewController: SwipeTableViewController {
     
     //MARK: - Database Methods
     func loadItems() {
-        items = realm.objects(Item.self)
+        items = selectedCategory?.items.sorted(byKeyPath: "date", ascending: false)
         tableView.reloadData()
     }
     
@@ -105,5 +105,25 @@ class ItemViewController: SwipeTableViewController {
         
     }
     
-    
 }
+
+
+extension ItemViewController: UISearchBarDelegate {
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        } else {
+            //Realtime Search
+            items = items?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "date", ascending: false)
+            tableView.reloadData()
+        }
+    }
+}
+
+
+
