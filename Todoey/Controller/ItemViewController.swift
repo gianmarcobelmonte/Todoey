@@ -16,6 +16,8 @@ class ItemViewController: SwipeTableViewController {
     
     var items: Results<Item>?
     
+    var mainNavBarColour: UIColor?
+    
     @IBOutlet weak var searchBar: UISearchBar!
     
     var selectedCategory: Category? {
@@ -38,7 +40,7 @@ class ItemViewController: SwipeTableViewController {
     
     
     override func viewWillDisappear(_ animated: Bool) {
-        updateNavBar(withHexCode: "1D9BF6")
+        updateNavBar(withHexCode: mainNavBarColour!.hexValue())
     }
     
     
@@ -69,7 +71,7 @@ class ItemViewController: SwipeTableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
-        
+   
         if let item = items?[indexPath.row] {
             cell.textLabel?.text = item.title
             cell.accessoryType = item.done ? .checkmark : .none
@@ -149,6 +151,34 @@ class ItemViewController: SwipeTableViewController {
             }
         }
         
+    }
+    
+    override func editModel(at indexPath: IndexPath) {
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Edit Task Name", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Modify", style: .default) { (action) in
+            if let item = self.items?[indexPath.row] {
+                
+                do {
+                    try self.realm.write {
+                        item.title = textField.text!
+                    }
+                } catch {
+                    print("Error updating task text, \(error)")
+                }
+            }
+            self.tableView.reloadData()
+        }
+        
+        alert.addTextField { (alertTextField) in
+            textField = alertTextField
+            textField.placeholder = "New task name"
+        }
+        
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
     }
     
 }
