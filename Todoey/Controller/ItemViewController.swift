@@ -16,6 +16,8 @@ class ItemViewController: SwipeTableViewController {
     
     var items: Results<Item>?
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     var selectedCategory: Category? {
         didSet {
             loadItems()
@@ -24,6 +26,39 @@ class ItemViewController: SwipeTableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
+    }
+    
+    //Gets called after viewDidLoad. Need to ensure that the view is loaded into the Navigation Controller
+    override func viewWillAppear(_ animated: Bool) {
+        title = selectedCategory?.title
+        guard let colourHex = selectedCategory?.hexValue else { fatalError("Colour from selectCategory doesn\'t exist") }
+        updateNavBar(withHexCode: colourHex)
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        updateNavBar(withHexCode: "1D9BF6")
+    }
+    
+    
+    //MARK: - NavBar Setup Methods
+    func updateNavBar(withHexCode colourHexCode: String) {
+        //In the first TableView ContrastColorOf makes the text and the nav items automatically white
+        guard let navBar = navigationController?.navigationBar else { fatalError("Navigation Controller doesn\'t exist") }
+        
+        guard let navBarColour = UIColor(hexString: colourHexCode) else { fatalError("Category colour doesn\'t exist") }
+        //Background navbar colour
+        navBar.barTintColor = navBarColour
+        
+        //Navigation Items and Button colour
+        navBar.tintColor = ContrastColorOf(navBarColour, returnFlat: true)
+        
+        //Title (text) colour
+        navBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor : ContrastColorOf(navBarColour, returnFlat: true)]
+        
+        searchBar.barTintColor = navBarColour
+        
     }
     
     
@@ -41,6 +76,8 @@ class ItemViewController: SwipeTableViewController {
             if let colour = UIColor(hexString: selectedCategory!.hexValue)!.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(items!.count)) {
                 cell.backgroundColor = colour
                 cell.textLabel?.textColor = ContrastColorOf(colour, returnFlat: true)
+                //Contrast color for checkmark
+                cell.tintColor = ContrastColorOf(colour, returnFlat: true)
             }
             
         }

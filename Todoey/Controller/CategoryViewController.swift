@@ -37,13 +37,13 @@ class CategoryViewController: SwipeTableViewController {
         
         if let category = categories?[indexPath.row] {
             cell.textLabel?.text = category.title
-            cell.backgroundColor = UIColor(hexString: category.hexValue)
-            
+            guard let categoryColour = UIColor(hexString: category.hexValue) else { fatalError("Category colour doesn\'t exist") }
+            cell.backgroundColor = categoryColour
+            cell.textLabel?.textColor = ContrastColorOf(categoryColour, returnFlat: true)
         }
 
         return cell
     }
-    
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
