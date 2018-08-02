@@ -52,7 +52,10 @@ class ItemViewController: SwipeTableViewController {
             } catch {
                 print("Error updating done item, \(error)")
             }
+            tableView.reloadData()
         }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
