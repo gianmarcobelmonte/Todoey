@@ -11,5 +11,6 @@ import RealmSwift
 
 class Category: Object {
     @objc dynamic var title: String = ""
+    @objc dynamic var hexValue: String = UIColor.randomFlat.hexValue()
     var items = List<Item>()
 }
